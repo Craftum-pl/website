@@ -4,267 +4,340 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Craftum</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg: #0d0a17;
+            --surface: #120e1f;
+            --text: #ece8f4;
+            --text-dim: #c9c1dc;
+            --text-muted: #8f86a6;
+            --text-footer: #b8b0cc;
+            --border: #3a3058;
+            --pink: oklch(0.78 0.17 350);
+            --pink-hot: oklch(0.72 0.2 350);
+            --cyan: oklch(0.78 0.17 215);
+        }
+
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
         }
 
         body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'IBM Plex Mono', ui-monospace, monospace;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        @keyframes gridRun {
+            from { background-position: 0 0; }
+            to { background-position: 0 64px; }
+        }
+
+        .page {
             min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scanlines {
+            pointer-events: none;
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            background: repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 3px);
+        }
+
+        /* Hero */
+        .hero {
+            position: relative;
+            height: min(58vh, 540px);
+            min-height: 380px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
-            position: relative;
-            overflow: hidden;
-            background: linear-gradient(to bottom, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            text-align: center;
+            padding: 0 24px;
         }
 
-        .vaporwave-bg {
-            position: fixed;
-            top: 0;
+        .sun {
+            position: absolute;
+            left: 50%;
+            top: 44%;
+            transform: translate(-50%, -50%);
+            width: min(64vw, 460px);
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: linear-gradient(to bottom, oklch(0.86 0.15 85), oklch(0.72 0.2 350) 62%, oklch(0.55 0.22 320));
+            --sun-mask: linear-gradient(to bottom, #000 52%, transparent 52% 56%, #000 56% 63%, transparent 63% 68%, #000 68% 74%, transparent 74% 80%, #000 80% 85%, transparent 85% 92%, #000 92%);
+            -webkit-mask-image: var(--sun-mask);
+            mask-image: var(--sun-mask);
+            filter: drop-shadow(0 0 60px oklch(0.72 0.2 350 / 0.45));
+            opacity: 0.9;
+        }
+
+        .grid-floor {
+            position: absolute;
             left: 0;
             right: 0;
             bottom: 0;
+            height: 46%;
+            perspective: 320px;
+            perspective-origin: 50% 0%;
+            overflow: hidden;
             pointer-events: none;
-            opacity: 0.1;
-            z-index: 0;
+            -webkit-mask-image: linear-gradient(to bottom, transparent, #000 35%);
+            mask-image: linear-gradient(to bottom, transparent, #000 35%);
         }
 
-        .vaporwave-bg .sun {
-            position: absolute;
-            bottom: 35%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 300px;
-            height: 300px;
-            background: linear-gradient(to bottom, #ff6b9d 0%, #ff6b9d 50%, #ffa07a 50%, #ffa07a 100%);
-            border-radius: 50%;
-            box-shadow: 0 0 100px #ff6b9d;
-        }
-
-        .vaporwave-bg .sun::before {
+        .grid-floor::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent 0px,
-                transparent 8px,
-                #1a1a2e 8px,
-                #1a1a2e 12px
-            );
-            border-radius: 50%;
-        }
-
-        .vaporwave-bg .grid-floor {
-            position: absolute;
-            bottom: 0;
             left: -50%;
             right: -50%;
-            height: 40%;
-            background: 
-                linear-gradient(to bottom, transparent 0%, rgba(0, 255, 255, 0.3) 100%),
-                repeating-linear-gradient(
-                    90deg,
-                    rgba(0, 255, 255, 0.5) 0px,
-                    rgba(0, 255, 255, 0.5) 1px,
-                    transparent 1px,
-                    transparent 60px
-                ),
-                repeating-linear-gradient(
-                    0deg,
-                    rgba(255, 0, 255, 0.5) 0px,
-                    rgba(255, 0, 255, 0.5) 1px,
-                    transparent 1px,
-                    transparent 40px
-                );
-            transform: perspective(500px) rotateX(60deg);
-            transform-origin: bottom center;
+            top: 0;
+            height: 200%;
+            transform-origin: 50% 0%;
+            transform: rotateX(62deg);
+            background-image:
+                linear-gradient(oklch(0.72 0.2 350 / 0.7) 1px, transparent 1px),
+                linear-gradient(90deg, oklch(0.72 0.18 215 / 0.55) 1px, transparent 1px);
+            background-size: 64px 64px;
+            animation: gridRun 1.6s linear infinite;
         }
 
-        @keyframes gridMove {
-            0% { background-position: 0 0, 0 0, 0 0; }
-            100% { background-position: 0 0, 0 0, 0 40px; }
-        }
-
-        .vaporwave-bg .grid-floor {
-            animation: gridMove 2s linear infinite;
-        }
-
-        .container {
-            max-width: 800px;
-            width: 100%;
-            text-align: center;
-            position: relative;
-            z-index: 1;
+        .hero-glow {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 60%;
+            background: radial-gradient(ellipse at 50% 100%, oklch(0.35 0.15 310 / 0.35), transparent 70%);
+            pointer-events: none;
         }
 
         h1 {
-            font-size: 5rem;
+            position: relative;
+            z-index: 2;
+            margin: 0;
+            font-family: 'Unbounded', sans-serif;
             font-weight: 800;
-            color: #fff;
-            margin-bottom: 1rem;
-            text-shadow: 4px 4px 0 #A855F7, 0 0 40px rgba(168, 85, 247, 0.5);
+            font-size: clamp(52px, 13vw, 168px);
+            line-height: 0.9;
+            letter-spacing: -0.02em;
+            background: linear-gradient(to bottom, #ffffff 0%, #e9e3ff 45%, var(--cyan) 50%, #2a1f4a 51%, var(--pink) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            filter: drop-shadow(0 4px 0 var(--bg)) drop-shadow(0 0 24px oklch(0.72 0.2 350 / 0.5));
         }
 
-        .subtitle {
-            font-size: 1.25rem;
-            color: #6b7280;
-            margin-bottom: 3rem;
+        /* Main */
+        main {
+            position: relative;
+            z-index: 2;
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 0 24px 96px;
+            display: flex;
+            flex-direction: column;
+            gap: 48px;
         }
 
         .projects {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
         }
 
         .project-card {
-            background: #fff;
-            border: 3px solid #1a1a1a;
-            box-shadow: 4px 4px 0 #1a1a1a;
-            padding: 2rem;
-            width: 280px;
-            text-decoration: none;
-            color: #1a1a1a;
-            transition: transform 0.15s, box-shadow 0.15s;
+            --accent: var(--pink);
+            --accent-text: oklch(0.85 0.15 350);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 28px;
+            border: 1px solid color-mix(in oklch, var(--accent) 45%, transparent);
+            background: linear-gradient(160deg, color-mix(in oklch, var(--accent) 12%, transparent), transparent 60%), var(--surface);
+            color: var(--text);
+            transition: box-shadow 0.2s, transform 0.2s;
         }
 
-        .project-card:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 6px 6px 0 #1a1a1a;
-        }
-
-        .project-card:active {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0 #1a1a1a;
-        }
-
-        .project-card h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.75rem;
-        }
-
-        .project-card p {
-            color: #6b7280;
-            font-size: 0.95rem;
-        }
-
-        .project-card.mclist {
-            border-color: #3B82F6;
-            box-shadow: 4px 4px 0 #3B82F6;
-        }
-
-        .project-card.mclist:hover {
-            box-shadow: 6px 6px 0 #3B82F6;
-        }
-
-        .project-card.mclist:active {
-            box-shadow: 2px 2px 0 #3B82F6;
+        .project-card:hover,
+        .project-card:focus-visible {
+            box-shadow: 0 0 0 1px var(--accent), 0 0 40px color-mix(in oklch, var(--accent) 35%, transparent);
+            transform: translateY(-3px);
         }
 
         .project-card.farmazon {
-            border-color: #A855F7;
-            box-shadow: 4px 4px 0 #A855F7;
+            --accent: oklch(0.78 0.17 350);
+            --accent-text: oklch(0.85 0.15 350);
         }
 
-        .project-card.farmazon:hover {
-            box-shadow: 6px 6px 0 #A855F7;
-        }
-
-        .project-card.farmazon:active {
-            box-shadow: 2px 2px 0 #A855F7;
+        .project-card.mclist {
+            --accent: oklch(0.78 0.17 215);
+            --accent-text: oklch(0.85 0.15 215);
         }
 
         .project-card.kiwimc {
-            border-color: #22C55E;
-            box-shadow: 4px 4px 0 #22C55E;
+            --accent: oklch(0.78 0.17 145);
+            --accent-text: oklch(0.85 0.17 145);
         }
 
-        .project-card.kiwimc:hover {
-            box-shadow: 6px 6px 0 #22C55E;
-        }
-
-        .project-card.kiwimc:active {
-            box-shadow: 2px 2px 0 #22C55E;
-        }
-
-        .small-btn {
-            display: inline-block;
-            color: #1a1a1a;
-            text-decoration: none;
+        .project-name {
+            font-family: 'Unbounded', sans-serif;
             font-weight: 600;
-            font-size: 0.875rem;
-            padding: 0.5rem 1rem;
-            border: 2px solid #1a1a1a;
-            box-shadow: 2px 2px 0 #1a1a1a;
-            background: #fff;
-            margin-top: 2rem;
-            transition: transform 0.15s, box-shadow 0.15s;
+            font-size: 30px;
+            color: var(--accent-text);
+            overflow-wrap: anywhere;
+        }
+
+        .project-desc {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text-dim);
+        }
+
+        .tools {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .tool-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            font-size: 15px;
+            color: var(--text);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .tool-btn:hover,
+        .tool-btn:focus-visible {
+            border-color: var(--pink);
+            box-shadow: 0 0 24px oklch(0.72 0.2 350 / 0.3);
+        }
+
+        .tool-btn .sub,
+        .tool-btn .arrow {
+            color: var(--text-muted);
+        }
+
+        .tool-btn .arrow {
+            font-size: 13px;
+        }
+
+        /* Footer */
+        footer {
             position: relative;
-            z-index: 1;
+            z-index: 2;
         }
 
-        .small-btn:hover {
-            transform: translate(-1px, -1px);
-            box-shadow: 3px 3px 0 #1a1a1a;
+        .footer-inner {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 40px 24px 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 4px;
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--text-footer);
         }
 
-        .small-btn:active {
-            transform: translate(1px, 1px);
-            box-shadow: 1px 1px 0 #1a1a1a;
+        .company-name {
+            font-family: 'Unbounded', sans-serif;
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--text);
         }
 
-        @media (max-width: 640px) {
-            h1 {
-                font-size: 3rem;
+        .footer-inner .value {
+            color: var(--text);
+        }
+
+        .footer-inner a:hover {
+            color: oklch(0.82 0.15 350);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .grid-floor::before {
+                animation: none;
             }
 
-            .project-card {
-                width: 100%;
-                max-width: 280px;
+            .project-card,
+            .tool-btn {
+                transition: none;
             }
         }
     </style>
 </head>
 <body>
-    <div class="vaporwave-bg">
-        <div class="sun"></div>
-        <div class="grid-floor"></div>
-    </div>
-    <div class="container">
-        <h1>Craftum</h1>
-        
-        <div class="projects">
-            <a href="https://mclist.io" class="project-card mclist" target="_blank" rel="noopener">
-                <h2>mclist.io</h2>
-                <p>Minecraft Java Edition server list</p>
-            </a>
-            
-            <a href="https://farmazon.app" class="project-card farmazon" target="_blank" rel="noopener">
-                <h2>farmazon.app</h2>
-                <p>Amazon price tracker & compare</p>
-            </a>
+    <div class="page">
+        <div class="scanlines" aria-hidden="true"></div>
 
-            <a href="https://kiwimc.pl" class="project-card kiwimc" target="_blank" rel="noopener">
-                <h2>kiwimc.pl</h2>
-                <p>Minecraft Skyblock server</p>
-            </a>
-        </div>
+        <section class="hero">
+            <div class="sun" aria-hidden="true"></div>
+            <div class="grid-floor" aria-hidden="true"></div>
+            <div class="hero-glow" aria-hidden="true"></div>
+            <h1>Craftum</h1>
+        </section>
 
-        <a href="https://paste.craftum.pl/" class="small-btn" target="_blank" rel="noopener">paste.craftum.pl</a>
-        <a href="https://tmp.craftum.pl/" class="small-btn" target="_blank" rel="noopener">tmp.craftum.pl</a>
-        <a href="https://vps.craftum.pl/pl/" class="small-btn" target="_blank" rel="noopener">vps.craftum.pl</a>
+        <main>
+            <section class="projects" aria-label="Projects">
+                <a href="https://farmazon.app" class="project-card farmazon" target="_blank" rel="noopener">
+                    <span class="project-name">farmazon.app</span>
+                    <span class="project-desc">Amazon price compare</span>
+                </a>
+
+                <a href="https://mclist.io" class="project-card mclist" target="_blank" rel="noopener">
+                    <span class="project-name">mclist.io</span>
+                    <span class="project-desc">Minecraft Java Edition server list</span>
+                </a>
+
+                <a href="https://kiwimc.pl" class="project-card kiwimc" target="_blank" rel="noopener">
+                    <span class="project-name">kiwimc.pl</span>
+                    <span class="project-desc">Minecraft Skyblock server</span>
+                </a>
+            </section>
+
+            <section class="tools" aria-label="Tools">
+                <a href="https://paste.craftum.pl/" class="tool-btn" target="_blank" rel="noopener">
+                    <span><span class="sub">paste.</span>craftum.pl</span><span class="arrow" aria-hidden="true">↗</span>
+                </a>
+                <a href="https://tmp.craftum.pl/" class="tool-btn" target="_blank" rel="noopener">
+                    <span><span class="sub">tmp.</span>craftum.pl</span><span class="arrow" aria-hidden="true">↗</span>
+                </a>
+                <a href="https://vps.craftum.pl/pl/" class="tool-btn" target="_blank" rel="noopener">
+                    <span><span class="sub">vps.</span>craftum.pl</span><span class="arrow" aria-hidden="true">↗</span>
+                </a>
+            </section>
+        </main>
+
+        <footer>
+            <div class="footer-inner">
+                <span class="company-name">Craftum Artur Motyka</span>
+                <span>VAT ID: <span class="value">PL9721364004</span></span>
+                <span>Contact: <a href="mailto:artur@craftum.pl" class="value">artur@craftum.pl</a></span>
+            </div>
+        </footer>
     </div>
 </body>
 </html>
